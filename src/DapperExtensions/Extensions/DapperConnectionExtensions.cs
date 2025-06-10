@@ -257,6 +257,51 @@ namespace Dapper.Extensions
         }
 
         /// <summary>
+        /// Creates a temp table named '#Temp' loaded with the items in the tempData parameter.
+        /// The field to join on will be #Temp.Item which will be created as a type defined in the tempDataType parameter.
+        /// A sample for using an int would be QueryWithRetryAndTempTableAsync(conn, querySQL, "int", listOfInts, querySQLParameters)
+        /// A sample for using an string of length 10 would be QueryWithRetryAndTempTableAsync(conn, querySQL, "varchar(10)", listOfKeys, querySQLParameters)
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="sql"></param>
+        /// <param name="tempDataType">specif</param>
+        /// <param name="tempData"></param>
+        /// <param name="parameters"></param>
+        /// <param name="transaction"></param>
+        /// <param name="batchSize"></param>
+        /// <param name="numberOfRetries"></param>
+        /// <param name="commandTimeout">The number of seconds before command execution timeout.</param>
+        /// <returns>
+        /// </returns>
+        public static async Task ExecuteWithTempTableAndRetryAsync(this SqlConnection connection, string sql, string tempDataType,
+            IEnumerable<string> tempData, object parameters = null, IDbTransaction transaction = null, int batchSize = 10000, int numberOfRetries = 5, int? commandTimeout = null)
+        {
+            Guard.Against.Null(tempData, nameof(tempData));
+            Guard.Against.NullOrWhiteSpace(tempDataType, nameof(tempDataType));
+
+            if (tempDataType.ContainsSQLInjectionKeywords())
+            {
+                throw new ArgumentException($"Attempted to inject SQL into temp table query: {tempDataType}", nameof(tempDataType));
+            }
+
+            var tmp = "#Temp";
+            await connection.ExecuteWithRetryAsync($"CREATE TABLE #Temp (Item {tempDataType} not null)");
+
+            using (var bulkCopy = new SqlBulkCopy(connection))
+            {
+                using (var reader = ObjectReader.Create(tempData.Distinct(StringComparer.InvariantCultureIgnoreCase).Select(x => new { Item = x })))
+                {
+                    bulkCopy.ColumnMappings.Add("Item", 0);
+                    bulkCopy.BatchSize = batchSize;
+                    bulkCopy.DestinationTableName = tmp;
+                    await bulkCopy.WriteToServerAsync(reader);
+                    await connection.ExecuteWithRetryAsync(sql, parameters, transaction, commandTimeout: commandTimeout)
+                        .WithRetry(numberOfRetries);
+                }
+            }
+        }
+
+        /// <summary>
         /// Check to see see if the connection is in the 'Open' ConnectionState
         /// If the connection is broken, it will close the connection safely.
         /// Then if the ConnectionState is anything other than 'Open', it will attempt to re-open the connection
