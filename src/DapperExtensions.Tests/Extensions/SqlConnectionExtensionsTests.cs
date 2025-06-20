@@ -33,8 +33,8 @@ namespace DapperExtensions.Tests.Extensions
             var result = await policy
                 .ExecuteAsync(() => Task.FromResult(invocations++ < 1 ? throw _sqlDeadlockException : true));
 
-            Assert.True(result);
-            Assert.AreEqual(2, invocations);
+            Assert.That(result, Is.True);
+            Assert.That(invocations, Is.EqualTo(2));
         }
 
         [Test]
@@ -61,8 +61,8 @@ namespace DapperExtensions.Tests.Extensions
                     return Task.FromResult(true);
                 });
 
-            Assert.True(result);
-            Assert.AreEqual(4, invocations);
+            Assert.That(result, Is.True);
+            Assert.That(invocations, Is.EqualTo(4));
         }
 
         [Test]
@@ -73,8 +73,8 @@ namespace DapperExtensions.Tests.Extensions
             var result = await policy
                 .ExecuteAsync(() => Task.FromResult(invocations++ < 1));
 
-            Assert.True(result);
-            Assert.AreEqual(1, invocations);
+            Assert.That(result, Is.True);
+            Assert.That(invocations, Is.EqualTo(1));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace DapperExtensions.Tests.Extensions
             {
                 Assert.That(ex.Number, Is.EqualTo(20));
             }
-            Assert.AreEqual(1, invocations);
+            Assert.That(invocations, Is.EqualTo(1));
         }
 
         [Test]

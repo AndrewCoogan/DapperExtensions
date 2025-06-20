@@ -8,8 +8,8 @@ namespace DapperExtensions.Tests.Extensions
         [Test]
         public void CanGetAllQueries()
         {
-            Assert.IsNotNull(QueryHelper.TableSchema.Select);
-            Assert.IsNotNull(QueryHelper.TempTableSchema.Select);
+            Assert.That(QueryHelper.TableSchema.Select, Is.Not.Null);
+            Assert.That(QueryHelper.TempTableSchema.Select, Is.Not.Null);
         }
     }
 }

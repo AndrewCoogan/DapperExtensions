@@ -20,9 +20,9 @@ namespace DapperExtensions.Tests.Extensions
         [Test]
         public void CanDetectSQLInjectionForTempTable()
         {
-            Assert.IsTrue(sqlInjectDrop.ContainsSQLInjectionKeywords());
-            Assert.IsFalse(sqlTempTableCreationFromInt.ContainsSQLInjectionKeywords());
-            Assert.IsFalse(sqlTempTableCreationFromVarchar.ContainsSQLInjectionKeywords());
+            Assert.That(sqlInjectDrop.ContainsSQLInjectionKeywords(), Is.True);
+            Assert.That(sqlTempTableCreationFromInt.ContainsSQLInjectionKeywords(), Is.False);
+            Assert.That(sqlTempTableCreationFromVarchar.ContainsSQLInjectionKeywords(), Is.False);
         }
     }
 }

@@ -1,0 +1,31 @@
+﻿namespace DapperExtensions.Models
+{
+    public enum DataType
+    {
+        Bit,
+        Date,
+        DateTime,
+        SmallDateTime,
+        DateTime2,
+        Numeric,
+        Decimal,
+        Money,
+        SmallMoney,
+        Float,
+        Real,
+        TinyInt,
+        SmallInt,
+        Int,
+        BigInt,
+        Char,
+        NChar,
+        VarChar,
+        NVarChar,
+        Text,
+        NText,
+        Binary,
+        Image,
+        Varbinary,
+        UniqueIdentifier
+    }
+}
