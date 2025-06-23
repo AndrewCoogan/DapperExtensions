@@ -30,8 +30,7 @@ namespace DapperExtensions.Tests.Extensions
         {
             var invocations = 0;
             var policy = DapperConnectionExtensions.GetSqlExponentialBackoffPolicy(3);
-            var result = await policy
-                .ExecuteAsync(() => Task.FromResult(invocations++ < 1 ? throw _sqlDeadlockException : true));
+            var result = await policy.ExecuteAsync(() => Task.FromResult(invocations++ < 1 ? throw _sqlDeadlockException : true));
 
             Assert.That(result, Is.True);
             Assert.That(invocations, Is.EqualTo(2));

@@ -5,16 +5,17 @@ using DapperExtensions.Models;
 namespace DapperExtensions.Attributes
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class DapperAttribute : Attribute
+    public class TempTable : Attribute
     {
         private const int MAX_SIZE = -1;
 
-        public DapperAttribute(DataType type, bool nullable = false, int? size = null, int? scale = null)
+        public TempTable(DataType type, bool nullable = false, int? size = null, int? scale = null, string nameOverride = null)
         {
             RawType = type;
             Nullable = nullable;
             Size = size;
             Scale = scale;
+            NameOverride = nameOverride;
 
             ValidateParameters();
         }
@@ -27,6 +28,8 @@ namespace DapperExtensions.Attributes
             result += " " + GetNullability();
             return result;
         }
+
+        public string NameOverride { get; private set; }
 
         // private methods
         private DataType RawType { get; set; }
