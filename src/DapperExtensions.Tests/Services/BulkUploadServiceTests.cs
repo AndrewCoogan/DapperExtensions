@@ -3,14 +3,15 @@ using NUnit.Framework;
 using Microsoft.Data.Sqlite;
 using Dapper;
 using System.Collections.Generic;
+using System;
 
 namespace DapperExtensions.Tests.Services
 {
-    internal class BulkUploadTempTableServiceTests
+    internal class BulkUploadServiceTests
     {
         private readonly SqliteConnection _connection;
 
-        public BulkUploadTempTableServiceTests()
+        public BulkUploadServiceTests()
         {
             _connection = new SqliteConnection("Data Source=:memory:");
         }
@@ -28,7 +29,7 @@ namespace DapperExtensions.Tests.Services
         }
 
         [Test]
-        public async Task CanGetData()
+        public async Task CanUploadData()
         {
             await _connection.ExecuteAsync(@"
                 CREATE TABLE DapperTableTest (
@@ -36,27 +37,40 @@ namespace DapperExtensions.Tests.Services
                     IsVarchar VARCHAR(50) NOT NULL,
                     IsBit BIT NOT NULL,
                     IsNullableBit BIT NULL,
-                    IsDecimal DECIMAL NOT NULL,
-
+                    IsDecimal DECIMAL(5, 2) NOT NULL,
+                    IsNullableDecimal DECIMAL(7, 3) NULL,
+                    IsTinyInt TINYINT NOT NULL,
+                    IsSmallInt SMALLINT NOT NULL,
+                    IsUShort SMALLINT NOT NULL,
+                    IsInt INT NOT NULL,
+                    IsUInt
+                    IsNullableInt INT NULL
 
                 );
             ");
 
-            var sql = "SELECT * FROM Departments";
-            var res = await _connection.QueryAsync<DapperTableTest>(sql);
-            Assert.That(res, Is.Not.Null);
-            Assert.That(res, Has.Exactly(3).Items);
-            Assert.That(res, Is.InstanceOf<IEnumerable<DapperTableTest>>());
+
         }
 
         private class DapperTableTest
         {
+            /// <summary>
+            /// Mapped to identity in sql db, 
+            /// </summary>
             public int Id { get; internal set; }
             public string IsVarchar { get; set; }
             public bool IsBit { get; set; }
             public bool? IsNullableBit { get; set; }
             public decimal IsDecimal { get; set; }
-
+            public decimal? IsNullableDecimal { get; set; }
+            public sbyte IsSByte { get; set; }
+            public byte IsByte { get; set; }
+            public short IsInt16 { get; set; }
+            public ushort IsUInt16 { get; set; }
+            public int IsInt { get; set; }
+            public uint IsUInt { get; set; }
+            public long IsInt64 { get; set; }
+            public ulong IsUInt64 { get; set; }
         }
     }
 }
